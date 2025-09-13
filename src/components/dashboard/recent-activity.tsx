@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react'
 interface Activity {
   id: string
   action: string
-  details: any
+  details: Record<string, unknown>
   createdAt: string
   user: {
     firstName: string

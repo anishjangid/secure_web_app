@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     const dateTo = searchParams.get('dateTo')
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     // If user is not admin, only show their own activities
     if (user.role.name !== 'SuperAdmin' && user.role.name !== 'Admin') {
@@ -111,16 +111,16 @@ export async function GET(request: NextRequest) {
 
     // Date range filters
     if (dateFrom || dateTo) {
-      where.createdAt = {}
+      where.createdAt = {} as Record<string, Date>
       if (dateFrom) {
-        where.createdAt.gte = new Date(dateFrom)
+        (where.createdAt as Record<string, Date>).gte = new Date(dateFrom)
       }
       if (dateTo) {
-        where.createdAt.lte = new Date(dateTo)
+        (where.createdAt as Record<string, Date>).lte = new Date(dateTo)
       }
     } else if (timeRange && timeRange !== 'all') {
       const now = new Date()
-      const whereCreatedAt: any = {}
+      const whereCreatedAt: Record<string, Date> = {}
       
       switch (timeRange) {
         case 'today':

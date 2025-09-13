@@ -28,7 +28,7 @@ import { toast } from 'sonner'
 interface Activity {
   id: string
   action: string
-  details: any
+  details: Record<string, unknown>
   ipAddress?: string
   userAgent?: string
   createdAt: string
@@ -206,12 +206,8 @@ const formatTimestamp = (timestamp: string) => {
   }
 }
 
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map(n => n.charAt(0))
-    .join('')
-    .toUpperCase()
+const getInitials = (firstName: string, lastName: string) => {
+  return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase()
 }
 
 export function ActivityLogTable({ refreshTrigger, filters }: ActivityLogTableProps) {

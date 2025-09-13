@@ -34,7 +34,7 @@ interface Role {
   id: string
   name: string
   description?: string
-  permissions: any
+  permissions: string[]
   createdAt: string
   updatedAt: string
   _count: {
@@ -176,7 +176,7 @@ export function RolesTable({ refreshTrigger }: RolesTableProps) {
             <TableBody>
               {roles.map((role) => {
                 const permissions = Array.isArray(role.permissions) ? role.permissions : []
-                const groupedPermissions = groupPermissionsByCategory(permissions)
+                const groupedPermissions = groupPermissionsByCategory(permissions as Permission[])
                 const totalPermissions = permissions.length
                 
                 return (
@@ -190,7 +190,7 @@ export function RolesTable({ refreshTrigger }: RolesTableProps) {
                           <div className="font-medium text-gray-900 dark:text-white">
                             {role.name}
                           </div>
-                          <Badge className={getRoleColor(role.name)}>
+                          <Badge className={getRoleColor(role.name as RoleName)}>
                             {role.name}
                           </Badge>
                         </div>
@@ -286,7 +286,7 @@ export function RolesTable({ refreshTrigger }: RolesTableProps) {
                     <h4 className="font-medium text-gray-900 dark:text-white">
                       {role.name}
                     </h4>
-                    <Badge className={getRoleColor(role.name)}>
+                    <Badge className={getRoleColor(role.name as RoleName)}>
                       {role.permissions.length} permissions
                     </Badge>
                   </div>

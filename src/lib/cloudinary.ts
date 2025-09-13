@@ -54,6 +54,6 @@ export async function deleteFromCloudinary(publicId: string): Promise<void> {
 }
 
 // Get Cloudinary URL with transformations
-export function getCloudinaryUrl(publicId: string, transformations?: any): string {
+export function getCloudinaryUrl(publicId: string, transformations?: Record<string, unknown>): string {
   return cloudinary.url(publicId, transformations)
 }

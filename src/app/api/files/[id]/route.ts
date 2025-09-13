@@ -5,7 +5,7 @@ import { getFileUrl } from '@/lib/storage'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await currentUser()
@@ -14,9 +14,11 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     // Get file record from database
     const fileRecord = await prisma.fileUpload.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { user: true }
     })
 
@@ -45,7 +47,7 @@ export async function GET(
     }
 
     // Get the file URL
-    const scanResult = fileRecord.scanResult as any
+    const scanResult = fileRecord.scanResult as { cloudUrl?: string; isCloud?: boolean }
     const fileUrl = getFileUrl(fileRecord.uploadPath, scanResult?.cloudUrl)
 
     // Log download activity
@@ -86,7 +88,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await currentUser()
@@ -94,6 +96,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const { id } = await params
 
     // Get user from database
     const dbUser = await prisma.user.findUnique({
@@ -107,7 +111,7 @@ export async function DELETE(
 
     // Get file record from database
     const fileRecord = await prisma.fileUpload.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { user: true }
     })
 
@@ -126,12 +130,12 @@ export async function DELETE(
 
     // Delete file from storage
     const { deleteFile } = await import('@/lib/storage')
-    const scanResult = fileRecord.scanResult as any
+    const scanResult = fileRecord.scanResult as { cloudPublicId?: string }
     await deleteFile(fileRecord.filePath, scanResult?.cloudPublicId)
 
     // Delete file record from database
     await prisma.fileUpload.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // Log delete activity

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -39,9 +39,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
+    const { id } = await params
+
     // Check if role is in use
     const roleInUse = await prisma.user.findFirst({
-      where: { roleId: params.id }
+      where: { roleId: id }
     })
 
     if (roleInUse) {
@@ -50,7 +52,7 @@ export async function DELETE(
 
     // Delete role
     await prisma.role.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'Role deleted successfully' })

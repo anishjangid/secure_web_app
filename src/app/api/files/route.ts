@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     const uploadedBy = searchParams.get('uploadedBy')
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     // If user is not admin, only show their own files
     if (user.role.name !== 'SuperAdmin' && user.role.name !== 'Admin') {

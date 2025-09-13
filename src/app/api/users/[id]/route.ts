@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -39,11 +39,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
+    const { id } = await params
     const { roleId } = await request.json()
 
     // Update user role
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         roleId: roleId
       },
@@ -67,7 +68,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -102,14 +103,16 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
+    const { id } = await params
+
     // Prevent self-deletion
-    if (dbUser.id === params.id) {
+    if (dbUser.id === id) {
       return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 400 })
     }
 
     // Delete user
     await prisma.user.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'User deleted successfully' })
